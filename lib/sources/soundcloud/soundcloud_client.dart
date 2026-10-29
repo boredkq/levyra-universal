@@ -35,7 +35,7 @@ class SoundCloudClient {
             headers: {'User-Agent': 'Mozilla/5.0'},
           ).timeout(const Duration(seconds: 4));
 
-          final match = RegExp(r'client_id[:=]\s*["\']([a-zA-Z0-9]{32})["\']').firstMatch(jsResp.body);
+          final match = RegExp(r'''client_id[:=]\s*["']([a-zA-Z0-9]{32})["']''').firstMatch(jsResp.body);
           if (match != null) {
             _cachedClientId = match.group(1);
             _clientIdExpiresAt = DateTime.now().add(const Duration(hours: 6));
@@ -77,7 +77,7 @@ class SoundCloudClient {
         final artist = UnifiedArtist(
           id: user['id']?.toString() ?? '',
           name: user['username'] as String? ?? 'SoundCloud Artist',
-          thumbnailUrl: user['avatar_url'] as String?,
+          avatarUrl: user['avatar_url'] as String?,
           isVerified: user['verified'] as bool? ?? false,
         );
 
@@ -87,7 +87,7 @@ class SoundCloudClient {
           sourceId: id,
           title: title,
           artists: [artist],
-          durationMs: durationMs,
+          duration: Duration(milliseconds: durationMs),
           thumbnailUrl: artworkUrl,
           highResThumbnailUrl: highResArtwork,
         ));
