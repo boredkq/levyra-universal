@@ -86,7 +86,7 @@ class _RecognitionSheetState extends State<RecognitionSheet>
               animation: _pulseController,
               builder: (context, child) {
                 return Stack(
-                  alignment: Alignment.Center,
+                  alignment: Alignment.center,
                   children: [
                     Container(
                       width: 140 + (_pulseController.value * 40),

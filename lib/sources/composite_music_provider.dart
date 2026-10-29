@@ -1,4 +1,7 @@
 import '../core/models/unified_track.dart';
+import '../core/models/unified_artist.dart';
+import '../core/models/unified_album.dart';
+import '../core/models/unified_playlist.dart';
 import '../core/models/audio_stream_descriptor.dart';
 import '../core/models/synced_lyrics.dart';
 import 'music_provider.dart';

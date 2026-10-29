@@ -80,7 +80,7 @@ class PlayerTopArtistCluster extends StatelessWidget {
                             BoxShadow(color: Colors.black45, blurRadius: 6, offset: Offset(0, 2))
                           ],
                         ),
-                        alignment: Alignment.Center,
+                        alignment: Alignment.center,
                         child: Text(
                           '+$overflow',
                           style: const TextStyle(
@@ -161,7 +161,7 @@ class _FallbackInitial extends StatelessWidget {
     final initial = name.trim().isNotEmpty ? name.trim()[0].toUpperCase() : '?';
     return Container(
       color: LevyraColors.highestContainer,
-      alignment: Alignment.Center,
+      alignment: Alignment.center,
       child: Text(
         initial,
         style: const TextStyle(

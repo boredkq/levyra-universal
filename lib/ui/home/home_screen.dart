@@ -250,7 +250,7 @@ class _HorizontalTrackShelf extends StatelessWidget {
     if (tracks.isEmpty) {
       return Container(
         height: 160,
-        alignment: Alignment.Center,
+        alignment: Alignment.center,
         child: Text('Загрузка подборок...', style: LevyraTypography.metadata),
       );
     }

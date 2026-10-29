@@ -5,6 +5,13 @@ import '../core/models/unified_playlist.dart';
 import '../core/models/audio_stream_descriptor.dart';
 import '../core/models/synced_lyrics.dart';
 
+export '../core/models/unified_track.dart';
+export '../core/models/unified_artist.dart';
+export '../core/models/unified_album.dart';
+export '../core/models/unified_playlist.dart';
+export '../core/models/audio_stream_descriptor.dart';
+export '../core/models/synced_lyrics.dart';
+
 class SearchResultPage {
   final List<UnifiedTrack> tracks;
   final List<UnifiedArtist> artists;

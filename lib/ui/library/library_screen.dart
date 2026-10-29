@@ -157,7 +157,7 @@ class _PlaylistsView extends StatelessWidget {
     if (playlists.isEmpty) {
       return Container(
         padding: const EdgeInsets.symmetric(vertical: 40),
-        alignment: Alignment.Center,
+        alignment: Alignment.center,
         child: Column(
           children: [
             const Icon(Icons.queue_music_rounded, size: 54, color: LevyraColors.mutedText),
