@@ -3,6 +3,13 @@ set -e
 
 echo "=== Levyra Music: Universal Cross-Platform Build Script ==="
 
+# Auto-scaffold native harnesses if running in a fresh workspace
+if [ ! -f "android/app/build.gradle" ] || [ ! -d "ios/Runner.xcodeproj" ]; then
+  echo "Scaffolding native platform harnesses..."
+  flutter create --org com.luc4n3x --project-name levyra_universal .
+  python3 scripts/configure_platforms.py
+fi
+
 TARGET=${1:-"all"}
 
 case "$TARGET" in

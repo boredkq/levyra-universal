@@ -30,6 +30,8 @@ stages:
               echo "##vso[task.prependpath]$HOME/flutter/bin"
             displayName: "Install Flutter SDK"
           - script: |
+              flutter create --org com.luc4n3x --project-name levyra_universal .
+              python3 scripts/configure_platforms.py
               flutter pub get
               flutter test
               flutter build apk --release --split-per-abi
@@ -50,6 +52,8 @@ stages:
             displayName: "Setup Linux Prerequisites & Flutter"
           - script: |
               flutter config --enable-linux-desktop
+              flutter create --org com.luc4n3x --project-name levyra_universal .
+              python3 scripts/configure_platforms.py
               flutter pub get
               flutter build linux --release
               tar -czvf $(Build.ArtifactStagingDirectory)/LevyraMusic-Linux-x64.tar.gz -C build/linux/x64/release/bundle .
@@ -76,6 +80,8 @@ stages:
             displayName: "Install Flutter SDK"
           - script: |
               flutter config --enable-macos-desktop
+              flutter create --org com.luc4n3x --project-name levyra_universal .
+              python3 scripts/configure_platforms.py
               flutter pub get
               flutter test
               flutter build macos --release
@@ -95,6 +101,8 @@ stages:
               echo "##vso[task.prependpath]$HOME/flutter/bin"
             displayName: "Install Flutter SDK"
           - script: |
+              flutter create --org com.luc4n3x --project-name levyra_universal .
+              python3 scripts/configure_platforms.py
               flutter pub get
               flutter test
               flutter build ios --release --no-codesign
@@ -125,6 +133,8 @@ stages:
             displayName: "Install Flutter SDK"
           - script: |
               flutter config --enable-windows-desktop
+              flutter create --org com.luc4n3x --project-name levyra_universal .
+              python scripts/configure_platforms.py
               flutter pub get
               flutter test
               flutter build windows --release

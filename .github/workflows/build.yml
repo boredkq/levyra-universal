@@ -24,6 +24,10 @@ jobs:
           flutter-version: '3.29.0'
           channel: 'stable'
           cache: true
+      - name: Scaffold & Configure Native Platforms
+        run: |
+          flutter create --org com.luc4n3x --project-name levyra_universal .
+          python3 scripts/configure_platforms.py
       - run: flutter pub get
       - run: flutter test
       - run: flutter build apk --release --split-per-abi
@@ -44,6 +48,10 @@ jobs:
           flutter-version: '3.29.0'
           channel: 'stable'
           cache: true
+      - name: Scaffold & Configure Native Platforms
+        run: |
+          flutter create --org com.luc4n3x --project-name levyra_universal .
+          python3 scripts/configure_platforms.py
       - run: flutter pub get
       - run: flutter test
       - name: Build iOS Application & Package IPA
@@ -71,6 +79,10 @@ jobs:
           channel: 'stable'
           cache: true
       - run: flutter config --enable-macos-desktop
+      - name: Scaffold & Configure Native Platforms
+        run: |
+          flutter create --org com.luc4n3x --project-name levyra_universal .
+          python3 scripts/configure_platforms.py
       - run: flutter pub get
       - run: flutter test
       - name: Compile macOS Application
@@ -96,6 +108,10 @@ jobs:
           channel: 'stable'
           cache: true
       - run: flutter config --enable-windows-desktop
+      - name: Scaffold & Configure Native Platforms
+        run: |
+          flutter create --org com.luc4n3x --project-name levyra_universal .
+          python scripts/configure_platforms.py
       - run: flutter pub get
       - run: flutter test
       - name: Compile Windows EXE
@@ -124,6 +140,10 @@ jobs:
           channel: 'stable'
           cache: true
       - run: flutter config --enable-linux-desktop
+      - name: Scaffold & Configure Native Platforms
+        run: |
+          flutter create --org com.luc4n3x --project-name levyra_universal .
+          python3 scripts/configure_platforms.py
       - run: flutter pub get
       - run: flutter test
       - name: Compile Linux App
