@@ -16,7 +16,6 @@ def verify_pubspec():
     if os.path.exists(pubspec_path):
         with open(pubspec_path, "r", encoding="utf-8") as f:
             content = f.read()
-        # Ensure package name matches all imports
         if not re.search(r'^name:\s*levyra_music\b', content, re.MULTILINE):
             print("[Pubspec] Ensuring package name is 'levyra_music'...")
             content = re.sub(r'^name:\s*.*$', 'name: levyra_music', content, flags=re.MULTILINE)
@@ -26,36 +25,41 @@ def verify_pubspec():
 
 def cleanup_test_files():
     widget_test = os.path.join(BASE_DIR, "test", "widget_test.dart")
-    if os.path.exists(widget_test):
-        with open(widget_test, "r", encoding="utf-8") as f:
-            content = f.read()
-        if "MyApp" in content or "counter" in content or "levyra_universal/main.dart" in content:
-            print("[Test Fix] Replacing broken auto-generated widget_test.dart with clean smoke test.")
-            with open(widget_test, "w", encoding="utf-8") as f:
-                f.write("""import 'package:flutter_test/flutter_test.dart';
+    clean_test_code = """import 'package:flutter_test/flutter_test.dart';
 import 'package:levyra_music/core/models/unified_track.dart';
 import 'package:levyra_music/core/models/unified_artist.dart';
 
 void main() {
   test('Levyra Music Smoke Test', () {
     const artist = UnifiedArtist(id: 'art_1', name: 'Levyra Audiophile');
-    const track = UnifiedTrack(
+    final track = UnifiedTrack(
       id: 'ytm:test_smoke_123',
-      source: 'youtube_music',
+      source: TrackSource.youtubeMusic,
       sourceId: 'test_smoke_123',
       title: 'Smoke Test Track',
-      artists: [artist],
-      durationMs: 240000,
+      artists: const [artist],
+      duration: const Duration(seconds: 240),
       thumbnailUrl: 'https://example.com/thumb.jpg',
     );
 
     expect(track.id, equals('ytm:test_smoke_123'));
+    expect(track.source, equals(TrackSource.youtubeMusic));
     expect(track.artists.first.name, equals('Levyra Audiophile'));
     expect(track.isExplicit, isFalse);
-    expect(track.durationMs, equals(240000));
+    expect(track.duration.inSeconds, equals(240));
   });
 }
-""")
+"""
+    if os.path.exists(widget_test):
+        with open(widget_test, "r", encoding="utf-8") as f:
+            content = f.read()
+        if "MyApp" in content or "counter" in content or "durationMs" in content or "youtube_music" in content:
+            print("[Test Fix] Replacing invalid widget_test.dart with clean smoke test.")
+            with open(widget_test, "w", encoding="utf-8") as f:
+                f.write(clean_test_code)
+    else:
+        with open(widget_test, "w", encoding="utf-8") as f:
+            f.write(clean_test_code)
 
 
 def configure_android():
