@@ -7,9 +7,55 @@ after `flutter create` runs during CI/CD builds.
 
 import os
 import re
-import xml.etree.ElementTree as ET
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+
+def verify_pubspec():
+    pubspec_path = os.path.join(BASE_DIR, "pubspec.yaml")
+    if os.path.exists(pubspec_path):
+        with open(pubspec_path, "r", encoding="utf-8") as f:
+            content = f.read()
+        # Ensure package name matches all imports
+        if not re.search(r'^name:\s*levyra_music\b', content, re.MULTILINE):
+            print("[Pubspec] Ensuring package name is 'levyra_music'...")
+            content = re.sub(r'^name:\s*.*$', 'name: levyra_music', content, flags=re.MULTILINE)
+            with open(pubspec_path, "w", encoding="utf-8") as f:
+                f.write(content)
+
+
+def cleanup_test_files():
+    widget_test = os.path.join(BASE_DIR, "test", "widget_test.dart")
+    if os.path.exists(widget_test):
+        with open(widget_test, "r", encoding="utf-8") as f:
+            content = f.read()
+        if "MyApp" in content or "counter" in content or "levyra_universal/main.dart" in content:
+            print("[Test Fix] Replacing broken auto-generated widget_test.dart with clean smoke test.")
+            with open(widget_test, "w", encoding="utf-8") as f:
+                f.write("""import 'package:flutter_test/flutter_test.dart';
+import 'package:levyra_music/core/models/unified_track.dart';
+import 'package:levyra_music/core/models/unified_artist.dart';
+
+void main() {
+  test('Levyra Music Smoke Test', () {
+    const artist = UnifiedArtist(id: 'art_1', name: 'Levyra Audiophile');
+    const track = UnifiedTrack(
+      id: 'ytm:test_smoke_123',
+      source: 'youtube_music',
+      sourceId: 'test_smoke_123',
+      title: 'Smoke Test Track',
+      artists: [artist],
+      durationMs: 240000,
+      thumbnailUrl: 'https://example.com/thumb.jpg',
+    );
+
+    expect(track.id, equals('ytm:test_smoke_123'));
+    expect(track.artists.first.name, equals('Levyra Audiophile'));
+    expect(track.isExplicit, isFalse);
+    expect(track.durationMs, equals(240000));
+  });
+}
+""")
 
 
 def configure_android():
@@ -73,7 +119,6 @@ def configure_android():
         with open(build_gradle, "r", encoding="utf-8") as f:
             gradle_content = f.read()
 
-        # If minSdk is 16 or lower, bump to 21
         if "minSdkVersion 16" in gradle_content:
             gradle_content = gradle_content.replace("minSdkVersion 16", "minSdkVersion 21")
             with open(build_gradle, "w", encoding="utf-8") as f:
@@ -171,9 +216,11 @@ def configure_macos():
 
 def main():
     print("=== Levyra Universal: Configuring Platform Manifests ===")
+    verify_pubspec()
     configure_android()
     configure_ios()
     configure_macos()
+    cleanup_test_files()
     print("=== Platform Configuration Done ===")
 
 

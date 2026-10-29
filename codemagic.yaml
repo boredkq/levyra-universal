@@ -17,7 +17,7 @@ workflows:
     scripts:
       - name: Scaffold & Configure Native Platforms
         script: |
-          flutter create --org com.luc4n3x --project-name levyra_universal .
+          flutter create --org com.luc4n3x --project-name levyra_music .
           python3 scripts/configure_platforms.py
       - name: Get Flutter dependencies
         script: |
@@ -45,7 +45,7 @@ workflows:
     scripts:
       - name: Scaffold & Configure Native Platforms
         script: |
-          flutter create --org com.luc4n3x --project-name levyra_universal .
+          flutter create --org com.luc4n3x --project-name levyra_music .
           python3 scripts/configure_platforms.py
       - name: Setup iOS & dependencies
         script: |
@@ -79,7 +79,7 @@ workflows:
       - name: Enable macOS Desktop & Scaffold
         script: |
           flutter config --enable-macos-desktop
-          flutter create --org com.luc4n3x --project-name levyra_universal .
+          flutter create --org com.luc4n3x --project-name levyra_music .
           python3 scripts/configure_platforms.py
       - name: Get Flutter dependencies
         script: |
@@ -111,9 +111,13 @@ workflows:
       - name: Scaffold & Configure Native Platforms
         script: |
           flutter config --enable-macos-desktop
-          flutter create --org com.luc4n3x --project-name levyra_universal .
+          flutter create --org com.luc4n3x --project-name levyra_music .
           python3 scripts/configure_platforms.py
+      - name: Get Dependencies
+        script: |
           flutter pub get
+      - name: Run Unit Tests
+        script: |
           flutter test
       - name: Build Android APK
         script: |

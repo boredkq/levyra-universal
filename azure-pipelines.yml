@@ -30,7 +30,7 @@ stages:
               echo "##vso[task.prependpath]$HOME/flutter/bin"
             displayName: "Install Flutter SDK"
           - script: |
-              flutter create --org com.luc4n3x --project-name levyra_universal .
+              flutter create --org com.luc4n3x --project-name levyra_music .
               python3 scripts/configure_platforms.py
               flutter pub get
               flutter test
@@ -52,7 +52,7 @@ stages:
             displayName: "Setup Linux Prerequisites & Flutter"
           - script: |
               flutter config --enable-linux-desktop
-              flutter create --org com.luc4n3x --project-name levyra_universal .
+              flutter create --org com.luc4n3x --project-name levyra_music .
               python3 scripts/configure_platforms.py
               flutter pub get
               flutter build linux --release
@@ -80,7 +80,7 @@ stages:
             displayName: "Install Flutter SDK"
           - script: |
               flutter config --enable-macos-desktop
-              flutter create --org com.luc4n3x --project-name levyra_universal .
+              flutter create --org com.luc4n3x --project-name levyra_music .
               python3 scripts/configure_platforms.py
               flutter pub get
               flutter test
@@ -101,7 +101,7 @@ stages:
               echo "##vso[task.prependpath]$HOME/flutter/bin"
             displayName: "Install Flutter SDK"
           - script: |
-              flutter create --org com.luc4n3x --project-name levyra_universal .
+              flutter create --org com.luc4n3x --project-name levyra_music .
               python3 scripts/configure_platforms.py
               flutter pub get
               flutter test
@@ -133,7 +133,7 @@ stages:
             displayName: "Install Flutter SDK"
           - script: |
               flutter config --enable-windows-desktop
-              flutter create --org com.luc4n3x --project-name levyra_universal .
+              flutter create --org com.luc4n3x --project-name levyra_music .
               python scripts/configure_platforms.py
               flutter pub get
               flutter test

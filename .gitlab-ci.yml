@@ -14,7 +14,7 @@ test:
   stage: test
   image: ghcr.io/cirruslabs/flutter:latest
   script:
-    - flutter create --org com.luc4n3x --project-name levyra_universal .
+    - flutter create --org com.luc4n3x --project-name levyra_music .
     - python3 scripts/configure_platforms.py
     - flutter pub get
     - flutter test
@@ -23,7 +23,7 @@ build_android:
   stage: build
   image: ghcr.io/cirruslabs/flutter:latest
   script:
-    - flutter create --org com.luc4n3x --project-name levyra_universal .
+    - flutter create --org com.luc4n3x --project-name levyra_music .
     - python3 scripts/configure_platforms.py
     - flutter pub get
     - flutter build apk --release --split-per-abi
@@ -39,7 +39,7 @@ build_linux:
     - apt-get update -y && apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev
   script:
     - flutter config --enable-linux-desktop
-    - flutter create --org com.luc4n3x --project-name levyra_universal .
+    - flutter create --org com.luc4n3x --project-name levyra_music .
     - python3 scripts/configure_platforms.py
     - flutter pub get
     - flutter build linux --release
