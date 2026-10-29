@@ -1,0 +1,136 @@
+name: Build & Release All Platforms
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch: # Allows manual 1-click trigger from GitHub Actions UI
+
+jobs:
+  # ----------------------------------------------------------------------------
+  # 1. Android APK
+  # ----------------------------------------------------------------------------
+  build-android:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.29.0'
+          channel: 'stable'
+          cache: true
+      - run: flutter pub get
+      - run: flutter test
+      - run: flutter build apk --release --split-per-abi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: android-apks
+          path: build/app/outputs/flutter-apk/*.apk
+
+  # ----------------------------------------------------------------------------
+  # 2. iOS IPA (No-codesign package for AltStore, TrollStore, SideStore)
+  # ----------------------------------------------------------------------------
+  build-ios:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.29.0'
+          channel: 'stable'
+          cache: true
+      - run: flutter pub get
+      - run: flutter test
+      - name: Build iOS Application & Package IPA
+        run: |
+          flutter build ios --release --no-codesign
+          cd build/ios/iphoneos
+          mkdir -p Payload
+          cp -r Runner.app Payload/
+          zip -r -y LevyraMusic-iOS.ipa Payload
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ios-ipa
+          path: build/ios/iphoneos/LevyraMusic-iOS.ipa
+
+  # ----------------------------------------------------------------------------
+  # 3. macOS Desktop
+  # ----------------------------------------------------------------------------
+  build-macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.29.0'
+          channel: 'stable'
+          cache: true
+      - run: flutter config --enable-macos-desktop
+      - run: flutter pub get
+      - run: flutter test
+      - name: Compile macOS Application
+        run: |
+          flutter build macos --release
+          cd build/macos/Build/Products/Release
+          zip -r -y LevyraMusic-macOS.zip LevyraMusic.app
+      - uses: actions/upload-artifact@v4
+        with:
+          name: macos-desktop
+          path: build/macos/Build/Products/Release/LevyraMusic-macOS.zip
+
+  # ----------------------------------------------------------------------------
+  # 4. Windows Desktop
+  # ----------------------------------------------------------------------------
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.29.0'
+          channel: 'stable'
+          cache: true
+      - run: flutter config --enable-windows-desktop
+      - run: flutter pub get
+      - run: flutter test
+      - name: Compile Windows EXE
+        run: |
+          flutter build windows --release
+          Compress-Archive -Path build\windows\x64\runner\Release\* -DestinationPath build\windows\LevyraMusic-Windows-x64.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows-desktop
+          path: build\windows\LevyraMusic-Windows-x64.zip
+
+  # ----------------------------------------------------------------------------
+  # 5. Linux Desktop
+  # ----------------------------------------------------------------------------
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Linux build dependencies
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev libstdc++-12-dev
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.29.0'
+          channel: 'stable'
+          cache: true
+      - run: flutter config --enable-linux-desktop
+      - run: flutter pub get
+      - run: flutter test
+      - name: Compile Linux App
+        run: |
+          flutter build linux --release
+          tar -czvf build/linux/LevyraMusic-Linux-x64.tar.gz -C build/linux/x64/release/bundle .
+      - uses: actions/upload-artifact@v4
+        with:
+          name: linux-desktop
+          path: build/linux/LevyraMusic-Linux-x64.tar.gz
