@@ -1,0 +1,139 @@
+# ==============================================================================
+# Codemagic CI/CD: Universal Multi-Platform Build Pipeline for Levyra Music
+# Free Tier: 500 build minutes/month on macOS M2, Windows, and Linux runners
+# Zero load on user's laptop, 100% independent from GitHub Actions
+# ==============================================================================
+
+workflows:
+  # ----------------------------------------------------------------------------
+  # 1. Android Workflow (Builds universal & split APKs)
+  # ----------------------------------------------------------------------------
+  android-release:
+    name: "Android Release (APK)"
+    max_build_duration: 30
+    instance_type: linux_x2
+    environment:
+      flutter: stable
+      java: 17
+    scripts:
+      - name: Get Flutter dependencies
+        script: |
+          flutter pub get
+      - name: Run Unit Tests
+        script: |
+          flutter test
+      - name: Build Android APK
+        script: |
+          flutter build apk --release --split-per-abi
+    artifacts:
+      - build/app/outputs/flutter-apk/*.apk
+
+  # ----------------------------------------------------------------------------
+  # 2. iOS Workflow (Builds native iOS .ipa for AltStore, SideStore, TrollStore)
+  # ----------------------------------------------------------------------------
+  ios-release:
+    name: "iOS Release (IPA Package)"
+    max_build_duration: 35
+    instance_type: mac_mini_m2
+    environment:
+      flutter: stable
+      xcode: latest
+      cocoapods: default
+    scripts:
+      - name: Setup iOS & dependencies
+        script: |
+          flutter pub get
+      - name: Run Unit Tests
+        script: |
+          flutter test
+      - name: Build iOS Application & IPA Package
+        script: |
+          flutter build ios --release --no-codesign
+          cd build/ios/iphoneos
+          mkdir -p Payload
+          cp -r Runner.app Payload/
+          zip -r -y LevyraMusic-iOS.ipa Payload
+    artifacts:
+      - build/ios/iphoneos/*.ipa
+      - build/ios/iphoneos/Runner.app
+
+  # ----------------------------------------------------------------------------
+  # 3. macOS Desktop Workflow (Builds native macOS .app and zipped bundle)
+  # ----------------------------------------------------------------------------
+  macos-release:
+    name: "macOS Desktop Release (Apple Silicon & Intel)"
+    max_build_duration: 30
+    instance_type: mac_mini_m2
+    environment:
+      flutter: stable
+      xcode: latest
+      cocoapods: default
+    scripts:
+      - name: Enable macOS Desktop
+        script: |
+          flutter config --enable-macos-desktop
+          flutter pub get
+      - name: Run Unit Tests
+        script: |
+          flutter test
+      - name: Build macOS Application
+        script: |
+          flutter build macos --release
+          cd build/macos/Build/Products/Release
+          zip -r -y LevyraMusic-macOS.zip LevyraMusic.app
+    artifacts:
+      - build/macos/Build/Products/Release/*.zip
+      - build/macos/Build/Products/Release/*.app
+
+  # ----------------------------------------------------------------------------
+  # 4. Windows Desktop Workflow (Builds native Windows .exe & DLLs)
+  # ----------------------------------------------------------------------------
+  windows-release:
+    name: "Windows Desktop Release (x64 EXE)"
+    max_build_duration: 35
+    instance_type: windows_x2
+    environment:
+      flutter: stable
+    scripts:
+      - name: Enable Windows Desktop
+        script: |
+          flutter config --enable-windows-desktop
+          flutter pub get
+      - name: Run Unit Tests
+        script: |
+          flutter test
+      - name: Build Windows Application
+        script: |
+          flutter build windows --release
+          Compress-Archive -Path build\windows\x64\runner\Release\* -DestinationPath build\windows\LevyraMusic-Windows-x64.zip
+    artifacts:
+      - build/windows/*.zip
+      - build/windows/x64/runner/Release/*.exe
+
+  # ----------------------------------------------------------------------------
+  # 4. Linux Desktop Workflow (Builds native Linux x64 bundle)
+  # ----------------------------------------------------------------------------
+  linux-release:
+    name: "Linux Desktop Release (x64 Bundle)"
+    max_build_duration: 25
+    instance_type: linux_x2
+    environment:
+      flutter: stable
+    scripts:
+      - name: Install Linux build dependencies
+        script: |
+          sudo apt-get update -y
+          sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev libstdc++-12-dev
+      - name: Enable Linux Desktop
+        script: |
+          flutter config --enable-linux-desktop
+          flutter pub get
+      - name: Run Unit Tests
+        script: |
+          flutter test
+      - name: Build Linux Application
+        script: |
+          flutter build linux --release
+          tar -czvf build/linux/LevyraMusic-Linux-x64.tar.gz -C build/linux/x64/release/bundle .
+    artifacts:
+      - build/linux/*.tar.gz

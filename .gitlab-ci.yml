@@ -1,0 +1,44 @@
+# ==============================================================================
+# GitLab CI/CD: Universal Pipeline for Levyra Music
+# Free Tier: 400 compute minutes/month on shared runners
+# ==============================================================================
+
+stages:
+  - test
+  - build
+
+variables:
+  FLUTTER_VERSION: "stable"
+
+test:
+  stage: test
+  image: ghcr.io/cirruslabs/flutter:latest
+  script:
+    - flutter pub get
+    - flutter test
+
+build_android:
+  stage: build
+  image: ghcr.io/cirruslabs/flutter:latest
+  script:
+    - flutter pub get
+    - flutter build apk --release --split-per-abi
+  artifacts:
+    paths:
+      - build/app/outputs/flutter-apk/*.apk
+    expire_in: 1 week
+
+build_linux:
+  stage: build
+  image: ghcr.io/cirruslabs/flutter:latest
+  before_script:
+    - apt-get update -y && apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev
+  script:
+    - flutter config --enable-linux-desktop
+    - flutter pub get
+    - flutter build linux --release
+    - tar -czvf LevyraMusic-Linux-x64.tar.gz -C build/linux/x64/release/bundle .
+  artifacts:
+    paths:
+      - LevyraMusic-Linux-x64.tar.gz
+    expire_in: 1 week
